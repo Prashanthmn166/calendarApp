@@ -4,6 +4,10 @@
     "slug": "CalendarApp",
     "privacy": "public",
     "sdkVersion": "36.0.0",
+    "android": {
+      "package": "com.yourcompany.yourappname",
+      "versionCode": 1
+    },
     "platforms": [
       "ios",
       "android",

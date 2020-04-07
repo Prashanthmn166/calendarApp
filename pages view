@@ -1,0 +1,15 @@
+import { Pages } from "react-native-pages";
+
+
+<View style={styles.container}>
+      <View style={styles.topBox}><Text>Helo</Text></View>
+    <Pages horizontal={false} indicatorPosition='left' indicatorOpacity={0} startPage={2} >
+      <View style={{ flex: 1, backgroundColor: 'yellow' }} >
+        <Text>hero</Text>
+        <Text>hero</Text>
+        <Text>hero</Text>
+      </View>
+      <View style={{ flex: 1, backgroundColor: 'green' }} />
+      <View style={{ flex: 1, backgroundColor: 'pink' }} />
+    </Pages>
+    </View>

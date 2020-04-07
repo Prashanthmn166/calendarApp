@@ -1,5 +1,5 @@
 import React, {Component, useState} from 'react';
-import { View, Text, StyleSheet, Image, TouchableHighlight, Alert, Button} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableHighlight} from 'react-native';
 import Modal, { ModalContent } from 'react-native-modals';
 import { Pages } from 'react-native-pages';
 import Colors from '../constants/Colors';
@@ -8,7 +8,8 @@ import CalendarData from '../data/dateDetails';
 
 class CalendarBody extends Component {
     state = {
-        showModal:true
+        showModal:false,
+        calendarDetails:{}
     }  ;
     constructor(props){
         super(props);
@@ -61,6 +62,7 @@ class CalendarBody extends Component {
             {
                 daysDetails[i] = { fullDate: '', day: '', date: '' ,type:'date'};
                 daysDetails[i].fullDate = new Date(this.currentYear, month-1, i);
+                
                 daysDetails[i].date = new Date(this.currentYear, month-1, i).getDate();
                 var day = daysDetails[i].fullDate.getDay();
                 for (var j = 0; j < tempMonthArr.length; j++) 
@@ -169,7 +171,7 @@ class CalendarBody extends Component {
                     else
                     {
                         return (<View style={{ ...styles.col, ...styles.dateBuilder }} >
-                                    <TouchableHighlight onPress={this.getDateDetails.bind(this, colItems.fullDate)}>
+                            <TouchableHighlight onPress={this.getDateDetails.bind(this, colItems.fullDate)}>
                                         <View>
                                             <Text style={styles.customDate} >{colItems.date}</Text>
                                             <View style={styles.dateImage}>
@@ -197,8 +199,11 @@ class CalendarBody extends Component {
         )
         return this.content;
     }
-    getDateDetails(d){
-        console.log(this.state.showModal);
+    getDateDetails(selectedDate){
+        this.setState({ showModal: true });
+        var date = new Date(new Date(selectedDate).setDate(new Date(selectedDate).getDate()));
+        var dateStr = ("0" + (date.getDate())).slice(-2) + '-' + (("0" + (date.getMonth() + 1))).slice(-2)+'-'+date.getFullYear();
+        this.setState({ calendarDetails: CalendarData[dateStr] });
     }
     render(){
         return (
@@ -219,17 +224,84 @@ class CalendarBody extends Component {
                 </Pages> 
                 <Modal
                     visible={this.state.showModal}
-                    onTouchOutside={() => {
-                        const { showModal } = this.state;  
-                        console.log("console log outside");
-                        console.log(this.state.showModal);
-                        this.setState({ showModal:false});
-                        console.log(this.state.showModal);
-                    }}
+                    onTouchOutside={() => { this.setState({ showModal:false});}}
                 >
-                    <ModalContent>
-                        <View><Text>Hero i am</Text></View>
-                        <Button title="submit" onPress={() => { this.setState({ showModal: false })}}/>
+                    <ModalContent style={styles.popupContainer}>
+                        <View >
+                            <Text style={styles.PopupMonthHeading}>{this.state.calendarDetails['MONTH']}</Text>
+                        </View>
+                        <View style={styles.popupMainDetails}>
+                            <View style={styles.popupDateDetails}>
+                                <View >
+                                    <Text style={styles.popupDisplayDate}>{this.state.calendarDetails['DATE']}</Text>
+                                </View>
+                                <View >
+                                    <Text style={styles.popupWeekDay} >{this.state.calendarDetails['DAYINHINDI']}</Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.popupEvent1Name}>{this.state.calendarDetails['EVENT1']}</Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.popupEvent2Name}>{this.state.calendarDetails['EVENT2']}</Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.popupEvent3Name}>{this.state.calendarDetails['EVENT3']}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.popupImage}>
+                                <Image source={require('../assets/REPUBLICDAY.png')} style={{ width: 100, height: 100 }}/>
+                            </View>                            
+                        </View>  
+                        <View style={styles.popuppopupDayHeadingContainer}>
+                            <Text style={styles.popupDayHeading}>{this.state.calendarDetails['DAYHEADING']}</Text>
+                        </View>
+                        <View style={styles.popupSunContainer}>
+                            <View style={styles.popupSunriseContainer}>
+                                <Image source={require('../assets/sunrise.png')} style={{ width: 20, height: 20 }}/>
+                                <Text>{this.state.calendarDetails['SUNRISE']}</Text>
+                            </View>
+                            <View style={styles.popupSunsetContainer}>
+                                <Image source={require('../assets/sunrise.png')} style={{ width: 20, height: 20 }} />
+                                <Text>{this.state.calendarDetails['SUNSET']}</Text>
+                            </View>
+                            <View style={styles.popupRashiContainer}>
+                                <Image source={require('../assets/sunrise.png')} style={{ width: 20, height: 20 }} />
+                                <Text>{this.state.calendarDetails['MOONSIGN']}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.popupKalaContainer}>
+                            <View style={styles.popupRahukalaContainer}>
+                                <Text style={styles.popupKalaName}>राहु काल</Text>
+                                <Text style={styles.popupKalaDetails}>{this.state.calendarDetails['RAHUKALA']}</Text>
+                            </View>
+                            <View style={styles.popupGuliContainer}>
+                                <Text style={styles.popupKalaName}>गुलि काला</Text>
+                                <Text style={styles.popupKalaDetails}>{this.state.calendarDetails['GULIKALA']}</Text>
+                            </View>
+                            <View style={styles.popupYamakalaContainer}>
+                                <Text style={styles.popupKalaName}>यमगंधा कला</Text>
+                                <Text style={styles.popupKalaDetails}>{this.state.calendarDetails['YAMAGANDAKALA']}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.popupBottomDetailsContainer}>
+                            <View style={styles.popupTithiContainer}>
+                                <Text style={styles.popupBottomDetailsName}>तिथि</Text>
+                                <Text style={styles.popupBottomDetailsDesc}>{this.state.calendarDetails['TITHI']}</Text>
+                            </View>
+                            <View style={styles.popupNakshatraContainer}>
+                                <Text style={styles.popupBottomDetailsName}>नक्षत्र</Text>
+                                <Text style={styles.popupBottomDetailsDesc}>{this.state.calendarDetails['NAKSHATAR']}</Text>
+                            </View>
+                            <View style={styles.popupYogaContainer}>
+                                <Text style={styles.popupBottomDetailsName}>योग</Text> 
+                                <Text style={styles.popupBottomDetailsDesc}>{this.state.calendarDetails['YOGA']}</Text>
+                            </View>
+                            <View style={styles.popupKarunaContainer}>
+                                <Text style={styles.popupBottomDetailsName}>करुणा</Text>
+                                <Text style={styles.popupBottomDetailsDesc}>{this.state.calendarDetails['KARANA']}</Text>
+                            </View>
+                        </View>
+                        {/* <Button title="submit" onPress={() => { this.setState({ showModal: false })}}/> */}
                     </ModalContent>
                 </Modal>
             </View>
@@ -289,6 +361,147 @@ const styles=StyleSheet.create({
     dateImage:{
         alignItems:"flex-end",
         justifyContent:"flex-end"
-    }
+    },
+    popupContainer:{
+        width:280,
+    },
+    PopupMonthHeading:{
+        fontSize:24,
+        color: Colors.nativeTextColor,
+        textAlign: "center",
+        paddingTop:0,
+        fontWeight: "bold"
+    },
+    popupMainDetails:{
+        flexDirection:"row",
+       
+
+    },
+    popupDateDetails:{
+        flex:1,
+        
+    },
+    popupImage:{
+        flex:1,
+        alignItems:"center",
+        justifyContent:"center"
+    },
+    popupDisplayDate:{
+        color: "#FF3B3B",
+        fontSize:34,
+        fontWeight:"bold"
+    }, 
+    popupWeekDay:{
+        color: "#FF3B3B"
+    },
+    popupEvent1Name:{
+        color: "#FF3B3B",
+        fontWeight: "bold"
+    },
+    popupEvent2Name: {
+        color: Colors.nativeTextColor,
+        fontWeight: "bold"
+    },
+    popupEvent3Name: {
+        fontWeight: "bold"
+    },
+    popuppopupDayHeadingContainer:{
+        paddingRight: 25,
+        paddingLeft: 25
+    },
+    popupDayHeading:{
+        color: Colors.nativeTextColor,
+        fontSize:16,
+        alignContent:"center",
+        alignItems:"center"
+    },
+    popupSunContainer:{
+        flexDirection:"row",
+        paddingRight:3,
+        paddingLeft:3,
+        fontSize:14,
+        alignContent:"center",
+        paddingTop:10
+    },
+    popupSunriseContainer:{
+        flex:1.5,
+        paddingRight: 2,
+        paddingLeft: 2,
+        flexDirection:"row",
+        justifyContent:"center"
+    },
+    popupSunsetContainer:{
+        flex:1.5,
+        paddingRight: 2,
+        paddingLeft: 2,
+        flexDirection: "row",
+        justifyContent: "center"
+    },
+    popupRashiContainer:{
+        flex:1,
+        paddingRight: 2,
+        paddingLeft: 2,
+        flexDirection: "row",
+        justifyContent: "center"
+    },
+    popupKalaContainer:{
+        flexDirection:"column"
+    },
+    popupRahukalaContainer:{
+        flexDirection: "row",
+        paddingTop:10,
+        paddingBottom:5
+    },
+    popupGuliContainer:{
+        flexDirection: "row",
+        paddingBottom: 5,
+        paddingTop: 5,
+    },
+    popupYamakalaContainer:{
+        flexDirection: "row",
+        paddingBottom: 5,
+        paddingTop: 5,
+    },
+    popupKalaName:{
+        color:Colors.nativeTextColor,
+        fontSize:16,
+        flex:1
+    },
+    popupKalaDetails:{
+        fontSize: 16,
+        flex:2
+    },
+    popupBottomDetailsContainer:{
+        flexDirection: "column",
+        paddingTop:20
+    },
+    popupBottomDetailsName: {
+        color:Colors.nativeTextColor,
+        fontSize:16,
+        flex:1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    }, 
+    popupBottomDetailsDesc: {
+        fontSize: 16,
+        flex: 2,
+        
+    },
+    popupTithiContainer:{
+        flexDirection: "row",
+        
+    },
+    popupNakshatraContainer:{
+        flexDirection: "row",
+        
+    },
+    popupYogaContainer:{
+        flexDirection: "row",
+        
+    },
+    popupKarunaContainer:{
+        flexDirection: "row",
+      
+    } 
 })
 export default CalendarBody;
